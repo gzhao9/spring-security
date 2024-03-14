@@ -49,10 +49,9 @@ public class AclEntryAfterInvocationCollectionFilteringProviderTests {
 
 	@Test
 	public void objectsAreRemovedIfPermissionDenied() {
-		AclService service = mock(AclService.class);
 		Acl acl = mock(Acl.class);
 		given(acl.isGranted(any(), any(), anyBoolean())).willReturn(false);
-		given(service.readAclById(any(), any())).willReturn(acl);
+		AclService service = MockAclService.mockservice(acl);
 		AclEntryAfterInvocationCollectionFilteringProvider provider = new AclEntryAfterInvocationCollectionFilteringProvider(
 				service, Arrays.asList(mock(Permission.class)));
 		provider.setObjectIdentityRetrievalStrategy(mock(ObjectIdentityRetrievalStrategy.class));

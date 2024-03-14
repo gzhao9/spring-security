@@ -61,10 +61,9 @@ public class AclEntryAfterInvocationProviderTests {
 
 	@Test
 	public void accessIsAllowedIfPermissionIsGranted() {
-		AclService service = mock(AclService.class);
 		Acl acl = mock(Acl.class);
 		given(acl.isGranted(any(List.class), any(List.class), anyBoolean())).willReturn(true);
-		given(service.readAclById(any(), any())).willReturn(acl);
+		AclService service = MockAclService.mockservice(acl);
 		AclEntryAfterInvocationProvider provider = new AclEntryAfterInvocationProvider(service,
 				Arrays.asList(mock(Permission.class)));
 		provider.setMessageSource(new SpringSecurityMessageSource());
@@ -98,12 +97,11 @@ public class AclEntryAfterInvocationProviderTests {
 
 	@Test
 	public void accessIsDeniedIfPermissionIsNotGranted() {
-		AclService service = mock(AclService.class);
 		Acl acl = mock(Acl.class);
 		given(acl.isGranted(any(List.class), any(List.class), anyBoolean())).willReturn(false);
 		// Try a second time with no permissions found
 		given(acl.isGranted(any(), any(List.class), anyBoolean())).willThrow(new NotFoundException(""));
-		given(service.readAclById(any(), any())).willReturn(acl);
+		AclService service = MockAclService.mockservice(acl);
 		AclEntryAfterInvocationProvider provider = new AclEntryAfterInvocationProvider(service,
 				Arrays.asList(mock(Permission.class)));
 		provider.setProcessConfigAttribute("MY_ATTRIBUTE");
@@ -130,5 +128,6 @@ public class AclEntryAfterInvocationProviderTests {
 			.isNull();
 		verify(service, never()).readAclById(any(ObjectIdentity.class), any(List.class));
 	}
+
 
 }
