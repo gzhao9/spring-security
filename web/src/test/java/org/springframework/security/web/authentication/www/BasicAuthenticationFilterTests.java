@@ -72,9 +72,11 @@ public class BasicAuthenticationFilterTests {
 	private BasicAuthenticationFilter filter;
 
 	private AuthenticationManager manager;
+	FilterChain chain;
 
 	@BeforeEach
 	public void setUp() {
+		chain = mock(FilterChain.class);
 		SecurityContextHolder.clearContext();
 		UsernamePasswordAuthenticationToken rodRequest = UsernamePasswordAuthenticationToken.unauthenticated("rod",
 				"koala");
@@ -97,7 +99,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServletPath("/some_file.html");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		// Test
@@ -118,7 +119,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		request.setSession(new MockHttpSession());
 		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		verify(chain, never()).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
@@ -132,7 +132,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		request.setSession(new MockHttpSession());
 		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		// The filter chain shouldn't proceed
 		verify(chain, never()).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -148,7 +147,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, new MockHttpServletResponse(), chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
@@ -177,7 +175,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, new MockHttpServletResponse(), chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
@@ -191,7 +188,6 @@ public class BasicAuthenticationFilterTests {
 		request.addHeader("Authorization", "BaSiC " + CodecTestUtils.encodeBase64(token));
 		request.setServletPath("/some_file.html");
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, new MockHttpServletResponse(), chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
@@ -203,7 +199,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "SOME_OTHER_AUTHENTICATION_SCHEME");
 		request.setServletPath("/some_file.html");
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, new MockHttpServletResponse(), chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
@@ -226,7 +221,6 @@ public class BasicAuthenticationFilterTests {
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
 		request.setServletPath("/some_file.html");
 		final MockHttpServletResponse response1 = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response1, chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		// Test
@@ -256,7 +250,6 @@ public class BasicAuthenticationFilterTests {
 		request.setSession(new MockHttpSession());
 		this.filter = new BasicAuthenticationFilter(this.manager);
 		assertThat(this.filter.isIgnoreFailure()).isTrue();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, new MockHttpServletResponse(), chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		// Test - the filter chain will be invoked, as we've set ignoreFailure = true
@@ -272,7 +265,6 @@ public class BasicAuthenticationFilterTests {
 		request.setSession(new MockHttpSession());
 		assertThat(this.filter.isIgnoreFailure()).isFalse();
 		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		// Test - the filter chain will not be invoked, as we get a 401 forbidden response
 		verify(chain, never()).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -289,7 +281,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		request.setAttribute(WebUtils.ERROR_REQUEST_URI_ATTRIBUTE, "/error");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
@@ -314,7 +305,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -343,7 +333,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -374,7 +363,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
 		verify(chain, never()).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -388,7 +376,6 @@ public class BasicAuthenticationFilterTests {
 		request.setServletPath("/some_file.html");
 		request.setSession(new MockHttpSession());
 		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		verify(chain, never()).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
@@ -407,7 +394,6 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		// Test
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-		FilterChain chain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, chain);
 		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
@@ -428,14 +414,13 @@ public class BasicAuthenticationFilterTests {
 		String token = "rod:koala";
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilter(request, response, filterChain);
+		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 
 		verify(this.manager, never()).authenticate(any(Authentication.class));
-		verify(filterChain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
-		verifyNoMoreInteractions(this.manager, filterChain);
+		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
+		verifyNoMoreInteractions(this.manager, chain);
 	}
 
 	@Test
@@ -450,15 +435,14 @@ public class BasicAuthenticationFilterTests {
 		String token = "rod:koala";
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilter(request, response, filterChain);
+		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 
 		ArgumentCaptor<Authentication> authenticationCaptor = ArgumentCaptor.forClass(Authentication.class);
 		verify(this.manager).authenticate(authenticationCaptor.capture());
-		verify(filterChain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
-		verifyNoMoreInteractions(this.manager, filterChain);
+		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
+		verifyNoMoreInteractions(this.manager, chain);
 
 		Authentication authenticationRequest = authenticationCaptor.getValue();
 		assertThat(authenticationRequest).isInstanceOf(UsernamePasswordAuthenticationToken.class);
@@ -477,15 +461,14 @@ public class BasicAuthenticationFilterTests {
 		String token = "rod:koala";
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilter(request, response, filterChain);
+		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 
 		ArgumentCaptor<Authentication> authenticationCaptor = ArgumentCaptor.forClass(Authentication.class);
 		verify(this.manager).authenticate(authenticationCaptor.capture());
-		verify(filterChain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
-		verifyNoMoreInteractions(this.manager, filterChain);
+		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
+		verifyNoMoreInteractions(this.manager, chain);
 
 		Authentication authenticationRequest = authenticationCaptor.getValue();
 		assertThat(authenticationRequest).isInstanceOf(UsernamePasswordAuthenticationToken.class);
@@ -499,14 +482,13 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
 		request.setServletPath("/ignored");
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilter(request, response, filterChain);
+		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 
 		verify(this.manager, never()).authenticate(any(Authentication.class));
-		verify(filterChain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
-		verifyNoMoreInteractions(this.manager, filterChain);
+		verify(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
+		verifyNoMoreInteractions(this.manager, chain);
 	}
 
 	@Test
@@ -516,9 +498,8 @@ public class BasicAuthenticationFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader("Authorization", "Basic " + CodecTestUtils.encodeBase64(token));
 		request.setServletPath("/ok");
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.filter.doFilter(request, response, filterChain);
+		this.filter.doFilter(request, response, chain);
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
 		assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("rod");
