@@ -54,10 +54,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class RememberMeAuthenticationFilterTests {
 
 	Authentication remembered = new TestingAuthenticationToken("remembered", "password", "ROLE_REMEMBERED");
+	FilterChain fc;
 
 	@BeforeEach
 	public void setUp() {
 		SecurityContextHolder.clearContext();
+		fc = mock(FilterChain.class);
 	}
 
 	@AfterEach
@@ -88,7 +90,6 @@ public class RememberMeAuthenticationFilterTests {
 		filter.afterPropertiesSet();
 		// Test
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		FilterChain fc = mock(FilterChain.class);
 		request.setRequestURI("x");
 		filter.doFilter(request, new MockHttpServletResponse(), fc);
 		// Ensure filter didn't change our original object
@@ -104,7 +105,6 @@ public class RememberMeAuthenticationFilterTests {
 				new MockRememberMeServices(this.remembered));
 		filter.afterPropertiesSet();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		FilterChain fc = mock(FilterChain.class);
 		request.setRequestURI("x");
 		filter.doFilter(request, new MockHttpServletResponse(), fc);
 		// Ensure filter setup with our remembered authentication object
@@ -129,7 +129,6 @@ public class RememberMeAuthenticationFilterTests {
 		filter.setApplicationEventPublisher(mock(ApplicationEventPublisher.class));
 		filter.afterPropertiesSet();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		FilterChain fc = mock(FilterChain.class);
 		request.setRequestURI("x");
 		filter.doFilter(request, new MockHttpServletResponse(), fc);
 		assertThat(SecurityContextHolder.getContext().getAuthentication()).isSameAs(failedAuth);
@@ -145,7 +144,6 @@ public class RememberMeAuthenticationFilterTests {
 		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/target"));
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain fc = mock(FilterChain.class);
 		request.setRequestURI("x");
 		filter.doFilter(request, response, fc);
 		assertThat(response.getRedirectedUrl()).isEqualTo("/target");
@@ -164,7 +162,6 @@ public class RememberMeAuthenticationFilterTests {
 		filter.setSecurityContextRepository(securityContextRepository);
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain fc = mock(FilterChain.class);
 		request.setRequestURI("x");
 		filter.doFilter(request, response, fc);
 		verify(securityContextRepository).saveContext(any(), eq(request), eq(response));
