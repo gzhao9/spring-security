@@ -28,7 +28,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -51,15 +51,22 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Tests for {@link ObservationFilterChainDecorator}
  */
 public class ObservationFilterChainDecoratorTests {
+	ObservationHandler<?> handler;
+	ObservationRegistry registry;
+	ObservationFilterChainDecorator decorator;
+	FilterChain chain;
+	@BeforeEach
+	void setup(){
+		handler = mock(ObservationHandler.class);
+		given(handler.supportsContext(any())).willReturn(true);
+		registry = ObservationRegistry.create();
+		registry.observationConfig().observationHandler(handler);
+		decorator = new ObservationFilterChainDecorator(registry);
+		chain = mock(FilterChain.class);
+	}
 
 	@Test
 	void decorateWhenDefaultsThenObserves() throws Exception {
-		ObservationHandler<?> handler = mock(ObservationHandler.class);
-		given(handler.supportsContext(any())).willReturn(true);
-		ObservationRegistry registry = ObservationRegistry.create();
-		registry.observationConfig().observationHandler(handler);
-		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
-		FilterChain chain = mock(FilterChain.class);
 		FilterChain decorated = decorator.decorate(chain);
 		decorated.doFilter(new MockHttpServletRequest("GET", "/"), new MockHttpServletResponse());
 		verify(handler).onStart(any());
@@ -67,8 +74,6 @@ public class ObservationFilterChainDecoratorTests {
 
 	@Test
 	void decorateWhenNoopThenDoesNotObserve() throws Exception {
-		ObservationHandler<?> handler = mock(ObservationHandler.class);
-		given(handler.supportsContext(any())).willReturn(true);
 		ObservationRegistry registry = ObservationRegistry.NOOP;
 		registry.observationConfig().observationHandler(handler);
 		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
@@ -80,12 +85,6 @@ public class ObservationFilterChainDecoratorTests {
 
 	@Test
 	void decorateFiltersWhenDefaultsThenObserves() throws Exception {
-		ObservationHandler<?> handler = mock(ObservationHandler.class);
-		given(handler.supportsContext(any())).willReturn(true);
-		ObservationRegistry registry = ObservationRegistry.create();
-		registry.observationConfig().observationHandler(handler);
-		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
-		FilterChain chain = mock(FilterChain.class);
 		Filter filter = mock(Filter.class);
 		FilterChain decorated = decorator.decorate(chain, List.of(filter));
 		decorated.doFilter(new MockHttpServletRequest("GET", "/"), new MockHttpServletResponse());
@@ -99,12 +98,6 @@ public class ObservationFilterChainDecoratorTests {
 
 	@Test
 	void decorateFiltersWhenDefaultsThenUsesEventName() throws Exception {
-		ObservationHandler<?> handler = mock(ObservationHandler.class);
-		given(handler.supportsContext(any())).willReturn(true);
-		ObservationRegistry registry = ObservationRegistry.create();
-		registry.observationConfig().observationHandler(handler);
-		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
-		FilterChain chain = mock(FilterChain.class);
 		Filter filter = new BasicAuthenticationFilter();
 		FilterChain decorated = decorator.decorate(chain, List.of(filter));
 		decorated.doFilter(new MockHttpServletRequest("GET", "/"), new MockHttpServletResponse());
@@ -118,12 +111,6 @@ public class ObservationFilterChainDecoratorTests {
 	// gh-12787
 	@Test
 	void decorateFiltersWhenErrorsThenClosesObservationOnlyOnce() throws Exception {
-		ObservationHandler<?> handler = mock(ObservationHandler.class);
-		given(handler.supportsContext(any())).willReturn(true);
-		ObservationRegistry registry = ObservationRegistry.create();
-		registry.observationConfig().observationHandler(handler);
-		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
-		FilterChain chain = mock(FilterChain.class);
 		Filter filter = mock(Filter.class);
 		willThrow(IllegalArgumentException.class).given(filter).doFilter(any(), any(), any());
 		FilterChain decorated = decorator.decorate(chain, List.of(filter));
@@ -141,7 +128,6 @@ public class ObservationFilterChainDecoratorTests {
 		ObservationRegistry registry = ObservationRegistry.create();
 		registry.observationConfig().observationHandler(handler);
 		ObservationFilterChainDecorator decorator = new ObservationFilterChainDecorator(registry);
-		FilterChain chain = mock(FilterChain.class);
 		FilterChain decorated = decorator.decorate(chain, List.of(filter));
 		decorated.doFilter(new MockHttpServletRequest("GET", "/"), new MockHttpServletResponse());
 		ArgumentCaptor<Observation.Context> context = ArgumentCaptor.forClass(Observation.Context.class);
