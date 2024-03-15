@@ -96,7 +96,7 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 	private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
 
 	private OAuth2AuthorizationCodeGrantFilter filter;
-
+	FilterChain filterChain;
 	@BeforeEach
 	public void setup() {
 		this.registration1 = TestClientRegistrations.clientRegistration().build();
@@ -114,6 +114,7 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 		securityContext.setAuthentication(authentication);
 		SecurityContextHolder.setContext(securityContext);
+		filterChain = mock(FilterChain.class);
 	}
 
 	@AfterEach
@@ -159,7 +160,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		// NOTE: A valid Authorization Response contains either a 'code' or 'error'
 		// parameter.
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.filter.doFilter(request, response, filterChain);
 		verify(filterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
 	}
@@ -169,7 +169,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/path");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
 		verify(filterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
 	}
@@ -182,7 +181,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		authorizationResponse.setRequestURI(requestUri + "-no-match");
-		FilterChain filterChain = mock(FilterChain.class);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
 		verify(filterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
 	}
@@ -199,7 +197,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
-		FilterChain filterChain = mock(FilterChain.class);
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
 		verifyNoInteractions(filterChain);
@@ -226,7 +223,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
-		FilterChain filterChain = mock(FilterChain.class);
 		// 1) Parameter value
 		Map<String, String> parametersNotMatch = new LinkedHashMap<>(parameters);
 		parametersNotMatch.put("param2", "value8");
@@ -257,7 +253,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
@@ -269,7 +264,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT);
 		given(this.authenticationManager.authenticate(any(Authentication.class)))
@@ -283,7 +277,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
@@ -301,7 +294,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
@@ -313,7 +305,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		SecurityContextHolderStrategy strategy = mock(SecurityContextHolderStrategy.class);
@@ -336,7 +327,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		request.setRequestURI("/callback/client-1");
 		request.addParameter(OAuth2ParameterNames.CODE, "code");
 		request.addParameter(OAuth2ParameterNames.STATE, "state");
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(request, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		String redirectUrl = requestCache.getRequest(request, response).getRedirectUrl();
@@ -349,7 +339,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		RequestCache requestCache = mock(RequestCache.class);
@@ -376,7 +365,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
@@ -404,7 +392,6 @@ public class OAuth2AuthorizationCodeGrantFilterTests {
 		MockHttpServletRequest authorizationRequest = createAuthorizationRequest("/callback/client-1");
 		MockHttpServletRequest authorizationResponse = createAuthorizationResponse(authorizationRequest);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = mock(FilterChain.class);
 		this.setUpAuthorizationRequest(authorizationRequest, response, this.registration1);
 		this.setUpAuthenticationResult(this.registration1);
 		this.filter.doFilter(authorizationResponse, response, filterChain);
