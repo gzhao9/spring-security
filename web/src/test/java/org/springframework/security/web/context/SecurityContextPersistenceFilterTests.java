@@ -40,7 +40,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class SecurityContextPersistenceFilterTests {
-
+	final FilterChain chain = mock(FilterChain.class);
+	final MockHttpServletRequest request = new MockHttpServletRequest();
+	final MockHttpServletResponse response = new MockHttpServletResponse();
 	TestingAuthenticationToken testToken = new TestingAuthenticationToken("someone", "passwd", "ROLE_A");
 
 	@AfterEach
@@ -50,9 +52,6 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void contextIsClearedAfterChainProceeds() throws Exception {
-		final FilterChain chain = mock(FilterChain.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest();
-		final MockHttpServletResponse response = new MockHttpServletResponse();
 		SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter();
 		SecurityContextHolder.getContext().setAuthentication(this.testToken);
 		filter.doFilter(request, response, chain);
@@ -62,9 +61,6 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void contextIsStillClearedIfExceptionIsThrowByFilterChain() throws Exception {
-		final FilterChain chain = mock(FilterChain.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest();
-		final MockHttpServletResponse response = new MockHttpServletResponse();
 		SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter();
 		SecurityContextHolder.getContext().setAuthentication(this.testToken);
 		willThrow(new IOException()).given(chain).doFilter(any(ServletRequest.class), any(ServletResponse.class));
@@ -74,7 +70,7 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void loadedContextContextIsCopiedToSecurityContextHolderAndUpdatedContextIsStored() throws Exception {
-		final MockHttpServletRequest request = new MockHttpServletRequest();
+
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		final TestingAuthenticationToken beforeAuth = new TestingAuthenticationToken("someoneelse", "passwd", "ROLE_B");
 		final SecurityContext scBefore = new SecurityContextImpl();
@@ -95,9 +91,6 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void filterIsNotAppliedAgainIfFilterAppliedAttributeIsSet() throws Exception {
-		final FilterChain chain = mock(FilterChain.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest();
-		final MockHttpServletResponse response = new MockHttpServletResponse();
 		SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter(
 				mock(SecurityContextRepository.class));
 		request.setAttribute(SecurityContextPersistenceFilter.FILTER_APPLIED, Boolean.TRUE);
@@ -107,9 +100,6 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void sessionIsEagerlyCreatedWhenConfigured() throws Exception {
-		final FilterChain chain = mock(FilterChain.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest();
-		final MockHttpServletResponse response = new MockHttpServletResponse();
 		SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter();
 		filter.setForceEagerSessionCreation(true);
 		filter.doFilter(request, response, chain);
@@ -118,9 +108,7 @@ public class SecurityContextPersistenceFilterTests {
 
 	@Test
 	public void nullSecurityContextRepoDoesntSaveContextOrCreateSession() throws Exception {
-		final FilterChain chain = mock(FilterChain.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest();
-		final MockHttpServletResponse response = new MockHttpServletResponse();
+
 		SecurityContextRepository repo = new NullSecurityContextRepository();
 		SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter(repo);
 		filter.doFilter(request, response, chain);
