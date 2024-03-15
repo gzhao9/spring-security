@@ -74,12 +74,22 @@ import static org.mockito.Mockito.verify;
 public class SwitchUserFilterTests {
 
 	private static final List<GrantedAuthority> ROLES_12 = AuthorityUtils.createAuthorityList("ROLE_ONE", "ROLE_TWO");
+	MockHttpServletRequest request;
+	SwitchUserFilter filter;
+
+	MockHttpServletResponse response;
+
+	FilterChain chain;
 
 	@BeforeEach
 	public void authenticateCurrentUser() {
 		UsernamePasswordAuthenticationToken auth = UsernamePasswordAuthenticationToken.unauthenticated("dano",
 				"hawaii50");
 		SecurityContextHolder.getContext().setAuthentication(auth);
+		request = new MockHttpServletRequest();
+		filter = new SwitchUserFilter();
+		response = new MockHttpServletResponse();
+		chain = mock(FilterChain.class);
 	}
 
 	@AfterEach
@@ -88,7 +98,6 @@ public class SwitchUserFilterTests {
 	}
 
 	private MockHttpServletRequest createMockSwitchRequest() {
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setScheme("http");
 		request.setServerName("localhost");
 		request.setRequestURI("/login/impersonate");
@@ -97,7 +106,6 @@ public class SwitchUserFilterTests {
 	}
 
 	private Authentication switchToUser(String name) {
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("myUsernameParameter", name);
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setUsernameParameter("myUsernameParameter");
@@ -106,7 +114,6 @@ public class SwitchUserFilterTests {
 	}
 
 	private Authentication switchToUserWithAuthorityRole(String name, String switchAuthorityRole) {
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, name);
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setUserDetailsService(new MockUserDetailsService());
@@ -118,7 +125,6 @@ public class SwitchUserFilterTests {
 	public void requiresExitUserMatchesCorrectly() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setExitUserUrl("/j_spring_security_my_exit_user");
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/j_spring_security_my_exit_user");
 		assertThat(filter.requiresExitUser(request)).isTrue();
 	}
@@ -128,7 +134,6 @@ public class SwitchUserFilterTests {
 	public void requiresExitUserWhenEndsWithThenDoesNotMatch() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setExitUserUrl("/j_spring_security_my_exit_user");
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/foo/bar/j_spring_security_my_exit_user");
 		assertThat(filter.requiresExitUser(request)).isFalse();
 	}
@@ -137,7 +142,6 @@ public class SwitchUserFilterTests {
 	// gh-4183
 	public void requiresExitUserWhenGetThenDoesNotMatch() {
 		SwitchUserFilter filter = new SwitchUserFilter();
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setScheme("http");
 		request.setServerName("localhost");
 		request.setRequestURI("/login/impersonate");
@@ -149,7 +153,6 @@ public class SwitchUserFilterTests {
 	public void requiresExitUserWhenMatcherThenWorks() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setExitUserMatcher(AnyRequestMatcher.INSTANCE);
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/foo/bar/j_spring_security_my_exit_user");
 		assertThat(filter.requiresExitUser(request)).isTrue();
 	}
@@ -158,7 +161,6 @@ public class SwitchUserFilterTests {
 	public void requiresSwitchMatchesCorrectly() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setSwitchUserUrl("/j_spring_security_my_switch_user");
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/j_spring_security_my_switch_user");
 		assertThat(filter.requiresSwitchUser(request)).isTrue();
 	}
@@ -168,7 +170,6 @@ public class SwitchUserFilterTests {
 	public void requiresSwitchUserWhenEndsWithThenDoesNotMatch() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setSwitchUserUrl("/j_spring_security_my_exit_user");
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/foo/bar/j_spring_security_my_exit_user");
 		assertThat(filter.requiresSwitchUser(request)).isFalse();
 	}
@@ -177,7 +178,6 @@ public class SwitchUserFilterTests {
 	// gh-4183
 	public void requiresSwitchUserWhenGetThenDoesNotMatch() {
 		SwitchUserFilter filter = new SwitchUserFilter();
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setScheme("http");
 		request.setServerName("localhost");
 		request.setRequestURI("/login/impersonate");
@@ -189,14 +189,12 @@ public class SwitchUserFilterTests {
 	public void requiresSwitchUserWhenMatcherThenWorks() {
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setSwitchUserMatcher(AnyRequestMatcher.INSTANCE);
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/foo/bar/j_spring_security_my_exit_user");
 		assertThat(filter.requiresSwitchUser(request)).isTrue();
 	}
 
 	@Test
 	public void attemptSwitchToUnknownUserFails() {
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "user-that-doesnt-exist");
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setUserDetailsService(new MockUserDetailsService());
@@ -230,7 +228,6 @@ public class SwitchUserFilterTests {
 
 	@Test
 	public void switchToLockedAccountCausesRedirectToSwitchFailureUrl() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/login/impersonate");
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "mcgarrett");
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -385,7 +382,6 @@ public class SwitchUserFilterTests {
 				"hawaii50");
 		SecurityContextHolder.getContext().setAuthentication(auth);
 		// http request
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setRequestURI("/webapp/login/impersonate");
 		request.setContextPath("/webapp");
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "jacklord");
@@ -412,7 +408,6 @@ public class SwitchUserFilterTests {
 		UsernamePasswordAuthenticationToken auth = UsernamePasswordAuthenticationToken.unauthenticated("dano",
 				"hawaii50");
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "jacklord");
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setUserDetailsService(new MockUserDetailsService());
@@ -431,7 +426,6 @@ public class SwitchUserFilterTests {
 	public void doFilterWhenCustomSecurityContextRepositoryThenUses() {
 		SecurityContextHolderStrategy securityContextHolderStrategy = spy(new MockSecurityContextHolderStrategy(
 				UsernamePasswordAuthenticationToken.unauthenticated("dano", "hawaii50")));
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "jacklord");
 		SwitchUserFilter filter = new SwitchUserFilter();
 		filter.setSecurityContextHolderStrategy(securityContextHolderStrategy);
@@ -519,7 +513,6 @@ public class SwitchUserFilterTests {
 	@Test
 	void doFilterWhenSwitchUserThenSaveSecurityContext() throws ServletException, IOException {
 		SecurityContextRepository securityContextRepository = mock(SecurityContextRepository.class);
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockFilterChain filterChain = new MockFilterChain();
 		request.setParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "jacklord");
@@ -546,7 +539,6 @@ public class SwitchUserFilterTests {
 				"hawaii50", adminAuths);
 		SecurityContextHolder.getContext().setAuthentication(admin);
 		SecurityContextRepository securityContextRepository = mock(SecurityContextRepository.class);
-		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockFilterChain filterChain = new MockFilterChain();
 		request.setParameter(SwitchUserFilter.SPRING_SECURITY_SWITCH_USERNAME_KEY, "jacklord");
