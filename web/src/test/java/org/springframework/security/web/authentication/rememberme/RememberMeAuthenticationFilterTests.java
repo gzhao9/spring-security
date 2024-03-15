@@ -98,8 +98,7 @@ public class RememberMeAuthenticationFilterTests {
 
 	@Test
 	public void testOperationWhenNoAuthenticationInContextHolder() throws Exception {
-		AuthenticationManager am = mock(AuthenticationManager.class);
-		given(am.authenticate(this.remembered)).willReturn(this.remembered);
+		AuthenticationManager am = mockAuthenticationManager();
 		RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(am,
 				new MockRememberMeServices(this.remembered));
 		filter.afterPropertiesSet();
@@ -138,8 +137,7 @@ public class RememberMeAuthenticationFilterTests {
 
 	@Test
 	public void authenticationSuccessHandlerIsInvokedOnSuccessfulAuthenticationIfSet() throws Exception {
-		AuthenticationManager am = mock(AuthenticationManager.class);
-		given(am.authenticate(this.remembered)).willReturn(this.remembered);
+		AuthenticationManager am = mockAuthenticationManager();
 		RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(am,
 				new MockRememberMeServices(this.remembered));
 		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/target"));
@@ -156,8 +154,7 @@ public class RememberMeAuthenticationFilterTests {
 	@Test
 	public void securityContextRepositoryInvokedIfSet() throws Exception {
 		SecurityContextRepository securityContextRepository = mock(SecurityContextRepository.class);
-		AuthenticationManager am = mock(AuthenticationManager.class);
-		given(am.authenticate(this.remembered)).willReturn(this.remembered);
+		AuthenticationManager am = mockAuthenticationManager();
 		RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(am,
 				new MockRememberMeServices(this.remembered));
 		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/target"));
@@ -192,6 +189,12 @@ public class RememberMeAuthenticationFilterTests {
 				Authentication successfulAuthentication) {
 		}
 
+	}
+
+	private AuthenticationManager mockAuthenticationManager(){
+		AuthenticationManager am = mock(AuthenticationManager.class);
+		given(am.authenticate(this.remembered)).willReturn(this.remembered);
+		return am;
 	}
 
 }
