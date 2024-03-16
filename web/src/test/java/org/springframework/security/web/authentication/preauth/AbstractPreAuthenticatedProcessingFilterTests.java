@@ -61,6 +61,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class AbstractPreAuthenticatedProcessingFilterTests {
 
 	private AbstractPreAuthenticatedProcessingFilter filter;
+	AuthenticationManager am;
 
 	@BeforeEach
 	public void createFilter() {
@@ -76,6 +77,7 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 			}
 		};
 		SecurityContextHolder.clearContext();
+		am = mock(AuthenticationManager.class);
 	}
 
 	@AfterEach
@@ -85,7 +87,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 
 	@Test
 	public void filterChainProceedsOnFailedAuthenticationByDefault() throws Exception {
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		given(am.authenticate(any(Authentication.class))).willThrow(new BadCredentialsException(""));
 		this.filter.setAuthenticationManager(am);
 		this.filter.afterPropertiesSet();
@@ -97,7 +98,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 	@Test
 	public void exceptionIsThrownOnFailedAuthenticationIfContinueFilterChainOnUnsuccessfulAuthenticationSetToFalse()
 			throws Exception {
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		given(am.authenticate(any(Authentication.class))).willThrow(new BadCredentialsException(""));
 		this.filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
 		this.filter.setAuthenticationManager(am);
@@ -117,7 +117,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 	@Test
 	public void testAfterPropertiesSetInvokesSuper() {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		assertThat(filter.initFilterBeanInvoked).isTrue();
@@ -166,7 +165,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = principal;
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -185,7 +183,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = "newUser";
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -205,7 +202,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		filter.setAuthenticationSuccessHandler(new ForwardAuthenticationSuccessHandler("/forwardUrl"));
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = "newUser";
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -228,7 +224,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		filter.setAuthenticationSuccessHandler(new ForwardAuthenticationSuccessHandler("/forwardUrl"));
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = "newUser";
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		given(am.authenticate(any())).willReturn(authRequest);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
@@ -246,7 +241,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setAuthenticationFailureHandler(new ForwardAuthenticationFailureHandler("/forwardUrl"));
 		filter.setCheckForPrincipalChanges(true);
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		given(am.authenticate(any(PreAuthenticatedAuthenticationToken.class)))
 			.willThrow(new PreAuthenticatedCredentialsNotFoundException("invalid"));
 		filter.setAuthenticationManager(am);
@@ -269,7 +263,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = principal;
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -289,7 +282,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = new User(currentPrincipal.getUsername(), currentPrincipal.getPassword(),
 				AuthorityUtils.NO_AUTHORITIES);
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -308,7 +300,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = new Object();
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -331,7 +322,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		};
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = principal;
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -354,7 +344,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		};
 		filter.setCheckForPrincipalChanges(true);
 		filter.principal = principal;
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -368,7 +357,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		MockFilterChain chain = new MockFilterChain();
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/no-matching"));
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -382,7 +370,6 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 		MockFilterChain chain = new MockFilterChain();
 		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/**"));
-		AuthenticationManager am = mock(AuthenticationManager.class);
 		filter.setAuthenticationManager(am);
 		filter.afterPropertiesSet();
 		filter.doFilter(request, response, chain);
@@ -397,8 +384,9 @@ public class AbstractPreAuthenticatedProcessingFilterTests {
 	}
 
 	private static ConcretePreAuthenticatedProcessingFilter getFilter(boolean grantAccess) {
-		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
 		AuthenticationManager am = mock(AuthenticationManager.class);
+		ConcretePreAuthenticatedProcessingFilter filter = new ConcretePreAuthenticatedProcessingFilter();
+
 		if (!grantAccess) {
 			given(am.authenticate(any(Authentication.class))).willThrow(new BadCredentialsException(""));
 		}
