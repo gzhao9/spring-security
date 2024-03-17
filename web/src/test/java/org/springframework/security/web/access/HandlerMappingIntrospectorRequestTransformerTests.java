@@ -46,10 +46,12 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	HandlerMappingIntrospector hmi;
 
 	HandlerMappingIntrospectorRequestTransformer transformer;
+	private HttpServletRequest request;
 
 	@BeforeEach
 	void setup() {
 		this.transformer = new HandlerMappingIntrospectorRequestTransformer(this.hmi);
+		request = mock(HttpServletRequest.class);
 	}
 
 	@Test
@@ -87,10 +89,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	 */
 	@Test
 	void transformThenResultDoesNotDelegateToSetAttribute() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -103,10 +102,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 
 	@Test
 	void transformThenSetAttributeWorks() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -123,10 +119,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	 */
 	@Test
 	void transformThenResultDoesNotDelegateToGetAttribute() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -141,10 +134,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	 */
 	@Test
 	void transformThenResultDoesNotDelegateToGetAttributeNames() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -154,10 +144,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 
 	@Test
 	void transformThenGetAttributeNamesWorks() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -174,10 +161,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	 */
 	@Test
 	void transformThenResultDoesNotDelegateToRemoveAttribute() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
@@ -192,10 +176,7 @@ class HandlerMappingIntrospectorRequestTransformerTests {
 	 */
 	@Test
 	void transformThenResultDoesNotDelegateToGetDispatcherType() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
 		this.transformer.transform(request);
-
 		ArgumentCaptor<HttpServletRequest> requestArg = ArgumentCaptor.forClass(HttpServletRequest.class);
 		verify(this.hmi).setCache(requestArg.capture());
 		HttpServletRequest transformedRequest = requestArg.getValue();
