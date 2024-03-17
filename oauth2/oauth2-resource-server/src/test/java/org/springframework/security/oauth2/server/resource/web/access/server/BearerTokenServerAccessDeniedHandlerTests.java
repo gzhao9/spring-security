@@ -48,9 +48,7 @@ public class BearerTokenServerAccessDeniedHandlerTests {
 	@Test
 	public void handleWhenNotOAuth2AuthenticatedThenStatus403() {
 		Authentication token = new TestingAuthenticationToken("user", "pass");
-		ServerWebExchange exchange = mock(ServerWebExchange.class);
-		given(exchange.getPrincipal()).willReturn(Mono.just(token));
-		given(exchange.getResponse()).willReturn(new MockServerHttpResponse());
+		ServerWebExchange exchange = mockServerWebExchange();
 		this.accessDeniedHandler.handle(exchange, null).block();
 		assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		assertThat(exchange.getResponse().getHeaders().get("WWW-Authenticate")).isEqualTo(Arrays.asList("Bearer"));
@@ -59,9 +57,7 @@ public class BearerTokenServerAccessDeniedHandlerTests {
 	@Test
 	public void handleWhenNotOAuth2AuthenticatedAndRealmSetThenStatus403AndAuthHeaderWithRealm() {
 		Authentication token = new TestingAuthenticationToken("user", "pass");
-		ServerWebExchange exchange = mock(ServerWebExchange.class);
-		given(exchange.getPrincipal()).willReturn(Mono.just(token));
-		given(exchange.getResponse()).willReturn(new MockServerHttpResponse());
+		ServerWebExchange exchange = mockServerWebExchange();
 		this.accessDeniedHandler.setRealmName("test");
 		this.accessDeniedHandler.handle(exchange, null).block();
 		assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -72,9 +68,7 @@ public class BearerTokenServerAccessDeniedHandlerTests {
 	@Test
 	public void handleWhenOAuth2AuthenticatedThenStatus403AndAuthHeaderWithInsufficientScopeErrorAttribute() {
 		Authentication token = new TestingOAuth2TokenAuthenticationToken(Collections.emptyMap());
-		ServerWebExchange exchange = mock(ServerWebExchange.class);
-		given(exchange.getPrincipal()).willReturn(Mono.just(token));
-		given(exchange.getResponse()).willReturn(new MockServerHttpResponse());
+		ServerWebExchange exchange = mockServerWebExchange();
 		this.accessDeniedHandler.handle(exchange, null).block();
 		assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		// @formatter:off
@@ -113,6 +107,12 @@ public class BearerTokenServerAccessDeniedHandlerTests {
 
 		}
 
+	}
+	private ServerWebExchange mockServerWebExchange(){
+		ServerWebExchange exchange = mock(ServerWebExchange.class);
+		given(exchange.getPrincipal()).willReturn(Mono.just(token));
+		given(exchange.getResponse()).willReturn(new MockServerHttpResponse());
+		return exchange;
 	}
 
 }
