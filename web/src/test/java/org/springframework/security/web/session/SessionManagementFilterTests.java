@@ -54,8 +54,10 @@ import static org.mockito.Mockito.withSettings;
  * @author Mark Chesney
  */
 public class SessionManagementFilterTests {
-
-	@BeforeEach
+	SecurityContextRepository repo;
+	@BeforeEach setup(){
+		repo = mock(SecurityContextRepository.class)
+	}
 	@AfterEach
 	public void clearContext() {
 		SecurityContextHolder.clearContext();
@@ -189,9 +191,9 @@ public class SessionManagementFilterTests {
 		RequestedUrlRedirectInvalidSessionStrategy invalidSessionStrategy = new RequestedUrlRedirectInvalidSessionStrategy();
 		invalidSessionStrategy.setCreateNewSession(true);
 		invalidSessionStrategy.setRedirectStrategy(redirectStrategy);
-		SecurityContextRepository securityContextRepository = mock(SecurityContextRepository.class);
+		SecurityContextRepository repo = mock(SecurityContextRepository.class);
 		SessionAuthenticationStrategy sessionAuthenticationStrategy = mock(SessionAuthenticationStrategy.class);
-		SessionManagementFilter filter = new SessionManagementFilter(securityContextRepository,
+		SessionManagementFilter filter = new SessionManagementFilter(repo,
 				sessionAuthenticationStrategy);
 		filter.setInvalidSessionStrategy(invalidSessionStrategy);
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -206,8 +208,8 @@ public class SessionManagementFilterTests {
 		filter.doFilter(request, response, chain);
 
 		// then
-		verify(securityContextRepository).containsContext(request);
-		verifyNoMoreInteractions(securityContextRepository, sessionAuthenticationStrategy, chain);
+		verify(repo).containsContext(request);
+		verifyNoMoreInteractions(repo, sessionAuthenticationStrategy, chain);
 		assertThat(response.isCommitted()).isTrue();
 		assertThat(response.getRedirectedUrl()).isEqualTo("/context/requested");
 		assertThat(response.getStatus()).isEqualTo(302);
@@ -221,9 +223,9 @@ public class SessionManagementFilterTests {
 		RequestedUrlRedirectInvalidSessionStrategy invalidSessionStrategy = new RequestedUrlRedirectInvalidSessionStrategy();
 		invalidSessionStrategy.setCreateNewSession(true);
 		invalidSessionStrategy.setRedirectStrategy(redirectStrategy);
-		SecurityContextRepository securityContextRepository = mock(SecurityContextRepository.class);
+		SecurityContextRepository repo = mock(SecurityContextRepository.class);
 		SessionAuthenticationStrategy sessionAuthenticationStrategy = mock(SessionAuthenticationStrategy.class);
-		SessionManagementFilter filter = new SessionManagementFilter(securityContextRepository,
+		SessionManagementFilter filter = new SessionManagementFilter(repo,
 				sessionAuthenticationStrategy);
 		filter.setInvalidSessionStrategy(invalidSessionStrategy);
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -237,8 +239,8 @@ public class SessionManagementFilterTests {
 		filter.doFilter(request, response, chain);
 
 		// then
-		verify(securityContextRepository).containsContext(request);
-		verifyNoMoreInteractions(securityContextRepository, sessionAuthenticationStrategy, chain);
+		verify(repo).containsContext(request);
+		verifyNoMoreInteractions(repo, sessionAuthenticationStrategy, chain);
 		assertThat(response.isCommitted()).isTrue();
 		assertThat(response.getRedirectedUrl()).isEqualTo("/requested");
 		assertThat(response.getStatus()).isEqualTo(307);
