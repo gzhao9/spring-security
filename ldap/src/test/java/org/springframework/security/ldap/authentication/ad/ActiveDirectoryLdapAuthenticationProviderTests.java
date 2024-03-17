@@ -203,7 +203,7 @@ public class ActiveDirectoryLdapAuthenticationProviderTests {
 		assertThatExceptionOfType(IncorrectResultSizeDataAccessException.class)
 			.isThrownBy(() -> this.provider.authenticate(this.joe));
 	}
-	private DirContext mockDirContext(){
+	private DirContext mockDirContext() throws NamingException {
 		DirContext ctx = mock(DirContext.class);
 		given(ctx.getNameInNamespace()).willReturn("");
 		return  ctx;
