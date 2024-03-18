@@ -22,6 +22,7 @@ import java.util.List;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.mock.web.MockFilterChain;
@@ -61,7 +62,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Onur Kagan Ozcan
  */
 public class ConcurrentSessionFilterTests {
-
+	private RedirectStrategy redirect;
+	@BeforeEach
+	void setup(){
+		redirect = mock(RedirectStrategy.class);
+	}
 	@AfterEach
 	public void cleanup() {
 		SecurityContextHolder.clearContext();
