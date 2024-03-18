@@ -83,6 +83,7 @@ public class SwitchUserWebFilterTests {
 	@Mock
 	private ServerSecurityContextRepository serverSecurityContextRepository;
 
+	final WebFilterChain chain = mock(WebFilterChain.class);
 	@BeforeEach
 	public void setUp() {
 		this.switchUserWebFilter = new SwitchUserWebFilter(this.userDetailsService, this.successHandler,
@@ -109,8 +110,7 @@ public class SwitchUserWebFilterTests {
 		final UserDetails switchUserDetails = switchUserDetails(targetUsername, true);
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/login/impersonate?username={targetUser}", targetUsername));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final Authentication originalAuthentication = UsernamePasswordAuthenticationToken.unauthenticated("principal",
+				final Authentication originalAuthentication = UsernamePasswordAuthenticationToken.unauthenticated("principal",
 				"credentials");
 		final SecurityContextImpl securityContext = new SecurityContextImpl(originalAuthentication);
 		given(this.userDetailsService.findByUsername(targetUsername)).willReturn(Mono.just(switchUserDetails));
@@ -154,8 +154,7 @@ public class SwitchUserWebFilterTests {
 		final String targetUsername = "newSwitchPrincipal";
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/login/impersonate?username={targetUser}", targetUsername));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		given(this.serverSecurityContextRepository.save(eq(exchange), any(SecurityContext.class)))
+				given(this.serverSecurityContextRepository.save(eq(exchange), any(SecurityContext.class)))
 			.willReturn(Mono.empty());
 		given(this.successHandler.onAuthenticationSuccess(any(WebFilterExchange.class), any(Authentication.class)))
 			.willReturn(Mono.empty());
@@ -182,8 +181,7 @@ public class SwitchUserWebFilterTests {
 	public void switchUserWhenUsernameIsMissingThenThrowException() {
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/login/impersonate"));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
+				final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
 		assertThatIllegalArgumentException().isThrownBy(() -> {
 			Context securityContextHolder = ReactiveSecurityContextHolder
 				.withSecurityContext(Mono.just(securityContext));
@@ -197,8 +195,7 @@ public class SwitchUserWebFilterTests {
 		final String targetUsername = "TEST_USERNAME";
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/login/impersonate?username={targetUser}", targetUsername));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
+				final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
 		final UserDetails switchUserDetails = switchUserDetails(targetUsername, false);
 		given(this.userDetailsService.findByUsername(any(String.class))).willReturn(Mono.just(switchUserDetails));
 		given(this.failureHandler.onAuthenticationFailure(any(WebFilterExchange.class), any(DisabledException.class)))
@@ -216,8 +213,7 @@ public class SwitchUserWebFilterTests {
 		final String targetUsername = "TEST_USERNAME";
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/login/impersonate?username={targetUser}", targetUsername));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
+				final SecurityContextImpl securityContext = new SecurityContextImpl(mock(Authentication.class));
 		final UserDetails switchUserDetails = switchUserDetails(targetUsername, false);
 		given(this.userDetailsService.findByUsername(any(String.class))).willReturn(Mono.just(switchUserDetails));
 		assertThatExceptionOfType(DisabledException.class).isThrownBy(() -> {
@@ -238,8 +234,7 @@ public class SwitchUserWebFilterTests {
 				SwitchUserWebFilter.ROLE_PREVIOUS_ADMINISTRATOR, originalAuthentication);
 		final Authentication switchUserAuthentication = UsernamePasswordAuthenticationToken
 			.authenticated("switchPrincipal", "switchCredentials", Collections.singleton(switchAuthority));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final SecurityContextImpl securityContext = new SecurityContextImpl(switchUserAuthentication);
+				final SecurityContextImpl securityContext = new SecurityContextImpl(switchUserAuthentication);
 		given(this.serverSecurityContextRepository.save(eq(exchange), any(SecurityContext.class)))
 			.willReturn(Mono.empty());
 		given(this.successHandler.onAuthenticationSuccess(any(WebFilterExchange.class), any(Authentication.class)))
@@ -265,8 +260,7 @@ public class SwitchUserWebFilterTests {
 			.from(MockServerHttpRequest.post("/logout/impersonate"));
 		final Authentication originalAuthentication = UsernamePasswordAuthenticationToken
 			.unauthenticated("origPrincipal", "origCredentials");
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		final SecurityContextImpl securityContext = new SecurityContextImpl(originalAuthentication);
+				final SecurityContextImpl securityContext = new SecurityContextImpl(originalAuthentication);
 		assertThatExceptionOfType(AuthenticationCredentialsNotFoundException.class).isThrownBy(() -> {
 			Context securityContextHolder = ReactiveSecurityContextHolder
 				.withSecurityContext(Mono.just(securityContext));
@@ -279,8 +273,7 @@ public class SwitchUserWebFilterTests {
 	public void exitSwitchWhenNoCurrentUserThenThrowError() {
 		final MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.post("/logout/impersonate"));
-		final WebFilterChain chain = mock(WebFilterChain.class);
-		assertThatExceptionOfType(AuthenticationCredentialsNotFoundException.class)
+				assertThatExceptionOfType(AuthenticationCredentialsNotFoundException.class)
 			.isThrownBy(() -> this.switchUserWebFilter.filter(exchange, chain).block())
 			.withMessage("No current user associated with this request");
 		verifyNoInteractions(chain);
