@@ -19,26 +19,45 @@ package org.springframework.security.config.annotation.method.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aopalliance.intercept.MethodInterceptor;
+
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import org.springframework.security.authorization.AuthorizationAdvisorProxyFactory;
 import org.springframework.security.authorization.method.AuthorizationAdvisor;
+import org.springframework.security.authorization.method.AuthorizationAdvisorProxyFactory;
+import org.springframework.security.authorization.method.AuthorizeReturnObjectMethodInterceptor;
+import org.springframework.security.config.Customizer;
 
 @Configuration(proxyBeanMethods = false)
 final class AuthorizationProxyConfiguration implements AopInfrastructureBean {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	static AuthorizationAdvisorProxyFactory authorizationProxyFactory(ObjectProvider<AuthorizationAdvisor> provider) {
+	static AuthorizationAdvisorProxyFactory authorizationProxyFactory(ObjectProvider<AuthorizationAdvisor> provider,
+			ObjectProvider<Customizer<AuthorizationAdvisorProxyFactory>> customizers) {
 		List<AuthorizationAdvisor> advisors = new ArrayList<>();
 		provider.forEach(advisors::add);
-		AuthorizationAdvisorProxyFactory factory = new AuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withDefaults();
+		customizers.forEach((c) -> c.customize(factory));
 		factory.setAdvisors(advisors);
 		return factory;
+	}
+
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static MethodInterceptor authorizeReturnObjectMethodInterceptor(ObjectProvider<AuthorizationAdvisor> provider,
+			AuthorizationAdvisorProxyFactory authorizationProxyFactory) {
+		AuthorizeReturnObjectMethodInterceptor interceptor = new AuthorizeReturnObjectMethodInterceptor(
+				authorizationProxyFactory);
+		List<AuthorizationAdvisor> advisors = new ArrayList<>();
+		provider.forEach(advisors::add);
+		advisors.add(interceptor);
+		authorizationProxyFactory.setAdvisors(advisors);
+		return interceptor;
 	}
 
 }
