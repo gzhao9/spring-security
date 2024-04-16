@@ -30,6 +30,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.TestAuthentication;
 import org.springframework.security.authorization.method.AuthorizationAdvisor;
+import org.springframework.security.authorization.method.AuthorizationAdvisorProxyFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,7 +53,7 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 
 	@Test
 	public void proxyWhenPreAuthorizeThenHonors() {
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		Flight flight = new Flight();
 		StepVerifier
 			.create(flight.getAltitude().contextWrite(ReactiveSecurityContextHolder.withAuthentication(this.user)))
@@ -67,7 +68,7 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 	@Test
 	public void proxyWhenPreAuthorizeOnInterfaceThenHonors() {
 		SecurityContextHolder.getContext().setAuthentication(this.user);
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		StepVerifier
 			.create(this.alan.getFirstName().contextWrite(ReactiveSecurityContextHolder.withAuthentication(this.user)))
 			.expectNext("alan")
@@ -89,7 +90,7 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 
 	@Test
 	public void proxyWhenPreAuthorizeOnRecordThenHonors() {
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		HasSecret repo = new Repository(Mono.just("secret"));
 		StepVerifier.create(repo.secret().contextWrite(ReactiveSecurityContextHolder.withAuthentication(this.user)))
 			.expectNext("secret")
@@ -104,7 +105,7 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 
 	@Test
 	public void proxyWhenPreAuthorizeOnFluxThenHonors() {
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		Flux<Flight> flights = Flux.just(this.flight);
 		Flux<Flight> secured = proxy(factory, flights);
 		StepVerifier
@@ -115,9 +116,9 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 
 	@Test
 	public void proxyWhenPreAuthorizeForClassThenHonors() {
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		Class<Flight> clazz = proxy(factory, Flight.class);
-		assertThat(clazz.getSimpleName()).contains("SpringCGLIB$$0");
+		assertThat(clazz.getSimpleName()).contains("SpringCGLIB$$");
 		Flight secured = proxy(factory, this.flight);
 		StepVerifier
 			.create(secured.getAltitude().contextWrite(ReactiveSecurityContextHolder.withAuthentication(this.user)))
@@ -129,7 +130,7 @@ public class ReactiveAuthorizationAdvisorProxyFactoryTests {
 		AuthorizationAdvisor advisor = mock(AuthorizationAdvisor.class);
 		given(advisor.getAdvice()).willReturn(advisor);
 		given(advisor.getPointcut()).willReturn(Pointcut.TRUE);
-		ReactiveAuthorizationAdvisorProxyFactory factory = new ReactiveAuthorizationAdvisorProxyFactory();
+		AuthorizationAdvisorProxyFactory factory = AuthorizationAdvisorProxyFactory.withReactiveDefaults();
 		factory.setAdvisors(advisor);
 		Flight flight = proxy(factory, this.flight);
 		flight.getAltitude();
