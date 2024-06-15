@@ -1,42 +1,9 @@
 [[new]]
-= What's New in Spring Security 6.3
+= What's New in Spring Security 6.4
 
-Spring Security 6.3 provides a number of new features.
-Below are the highlights of the release.
+Spring Security 6.4 provides a number of new features.
+Below are the highlights of the release, or you can view https://github.com/spring-projects/spring-security/releases[the release notes] for a detailed listing of each feature and bug fix.
 
-== General
+- https://github.com/spring-projects/spring-security/issues/4186[gh-4186] - Support `RoleHierarchy` in `AclAuthorizationStrategyImpl`
+- https://github.com/spring-projects/spring-security/issues/15136[gh-15136] - Support `RoleHierarchy` Bean in `authorizeHttpRequests` Kotlin DSL
 
-- https://spring.io/blog/2024/01/19/spring-security-6-3-adds-passive-jdk-serialization-deserialization-for[blog post] - Added Passive JDK Serialization/Deserialization for Seamless Upgrades
-
-== Authentication
-
-- https://github.com/spring-projects/spring-security/issues/7395[gh-7395] - xref:features/authentication/password-storage.adoc#authentication-compromised-password-check[docs] - Add Compromised Password Checker
-
-== Authorization
-
-- https://github.com/spring-projects/spring-security/issues/14596[gh-14596] - xref:servlet/authorization/method-security.adoc[docs] - Add Programmatic Proxy Support for Method Security
-- https://github.com/spring-projects/spring-security/issues/14597[gh-14597] - xref:servlet/authorization/method-security.adoc[docs] - Add Securing of Return Values
-- https://github.com/spring-projects/spring-security/issues/14601[gh-14601] - xref:servlet/authorization/method-security.adoc#fallback-values-authorization-denied[docs] - Add Authorization Denied Handlers for Method Security
-
-== Configuration
-
-- https://github.com/spring-projects/spring-security/issues/6192[gh-6192] - xref:reactive/authentication/concurrent-sessions-control.adoc[(docs)] - Add Concurrent Sessions Control on WebFlux
-
-== CAS
-
-- https://github.com/spring-projects/spring-security/pull/14193[gh-14193] - Added support for CAS Gateway Authentication
-
-== Crypto
-
-- https://github.com/spring-projects/spring-security/issues/14202[gh-14202] - Migrated spring-security-rsa into spring-security-crypto
-
-== OAuth2
-
-- https://github.com/spring-projects/spring-security/issues/13259[gh-13259] - Customize when UserInfo is called
-- https://github.com/spring-projects/spring-security/pull/14168[gh-14168] - Introduce Customizable AuthorizationFailureHandler in OAuth2AuthorizationRequestRedirectFilter
-- https://github.com/spring-projects/spring-security/issues/5199[gh-5199], https://github.com/spring-projects/spring-security/issues/14701[gh-14701] - Add support for OAuth 2.0 Token Exchange Grant
-- https://github.com/spring-projects/spring-security/issues/14672[gh-14672] - Customize mapping the OidcUser from OidcUserRequest and OidcUserInfo
-
-== Documentation
-
-- https://github.com/spring-projects/spring-security/pull/14263[gh-14263] - xref:servlet/authentication/passwords/caching.adoc[(docs)] - Add documentation for CachingUserDetailsService
