@@ -13,7 +13,7 @@ org-jetbrains-kotlin = "1.9.24"
 org-jetbrains-kotlinx = "1.8.1"
 org-mockito = "5.11.0"
 org-opensaml = "4.3.2"
-org-springframework = "6.1.9"
+org-springframework = "6.2.0-M4"
 
 [libraries]
 ch-qos-logback-logback-classic = "ch.qos.logback:logback-classic:1.5.6"
@@ -46,6 +46,7 @@ jakarta-websocket-jakarta-websocket-client-api = { module = "jakarta.websocket:j
 jakarta-xml-bind-jakarta-xml-bind-api = "jakarta.xml.bind:jakarta.xml.bind-api:4.0.2"
 ldapsdk = "ldapsdk:ldapsdk:4.1"
 net-sourceforge-htmlunit = "net.sourceforge.htmlunit:htmlunit:2.70.0"
+org-htmlunit-htmlunit = "org.htmlunit:htmlunit:4.1.0"
 org-apache-directory-server-apacheds-core = { module = "org.apache.directory.server:apacheds-core", version.ref = "org-apache-directory-server" }
 org-apache-directory-server-apacheds-entry = { module = "org.apache.directory.server:apacheds-core-entry", version.ref = "org-apache-directory-server" }
 org-apache-directory-server-apacheds-protocol-ldap = { module = "org.apache.directory.server:apacheds-protocol-ldap", version.ref = "org-apache-directory-server" }
@@ -53,7 +54,7 @@ org-apache-directory-server-apacheds-protocol-shared = { module = "org.apache.di
 org-apache-directory-server-apacheds-server-jndi = { module = "org.apache.directory.server:apacheds-server-jndi", version.ref = "org-apache-directory-server" }
 org-apache-directory-shared-shared-ldap = "org.apache.directory.shared:shared-ldap:0.9.15"
 org-apache-httpcomponents-httpclient = "org.apache.httpcomponents:httpclient:4.5.14"
-org-apache-maven-maven-resolver-provider = "org.apache.maven:maven-resolver-provider:3.9.7"
+org-apache-maven-maven-resolver-provider = "org.apache.maven:maven-resolver-provider:3.9.8"
 org-apache-maven-resolver-maven-resolver-connector-basic = { module = "org.apache.maven.resolver:maven-resolver-connector-basic", version.ref = "org-apache-maven-resolver" }
 org-apache-maven-resolver-maven-resolver-impl = { module = "org.apache.maven.resolver:maven-resolver-impl", version.ref = "org-apache-maven-resolver" }
 org-apache-maven-resolver-maven-resolver-transport-http = { module = "org.apache.maven.resolver:maven-resolver-transport-http", version.ref = "org-apache-maven-resolver" }
@@ -78,13 +79,13 @@ org-opensaml-opensaml-core = { module = "org.opensaml:opensaml-core", version.re
 org-opensaml-opensaml-saml-api = { module = "org.opensaml:opensaml-saml-api", version.ref = "org-opensaml" }
 org-opensaml-opensaml-saml-impl = { module = "org.opensaml:opensaml-saml-impl", version.ref = "org-opensaml" }
 org-python-jython = { module = "org.python:jython", version = "2.5.3" }
-org-seleniumhq-selenium-htmlunit-driver = "org.seleniumhq.selenium:htmlunit-driver:2.70.0"
-org-seleniumhq-selenium-selenium-java = "org.seleniumhq.selenium:selenium-java:3.141.59"
+org-seleniumhq-selenium-htmlunit-driver = "org.seleniumhq.selenium:htmlunit3-driver:4.20.0"
+org-seleniumhq-selenium-selenium-java = "org.seleniumhq.selenium:selenium-java:4.20.0"
 org-seleniumhq-selenium-selenium-support = "org.seleniumhq.selenium:selenium-support:3.141.59"
 org-skyscreamer-jsonassert = "org.skyscreamer:jsonassert:1.5.1"
 org-slf4j-log4j-over-slf4j = "org.slf4j:log4j-over-slf4j:1.7.36"
 org-slf4j-slf4j-api = "org.slf4j:slf4j-api:2.0.13"
-org-springframework-data-spring-data-bom = "org.springframework.data:spring-data-bom:2024.0.0"
+org-springframework-data-spring-data-bom = "org.springframework.data:spring-data-bom:2024.0.1"
 org-springframework-ldap-spring-ldap-core = "org.springframework.ldap:spring-ldap-core:3.2.4"
 org-springframework-spring-framework-bom = { module = "org.springframework:spring-framework-bom", version.ref = "org-springframework" }
 org-synchronoss-cloud-nio-multipart-parser = "org.synchronoss.cloud:nio-multipart-parser:1.1.0"
@@ -99,7 +100,7 @@ org-gretty-gretty = "org.gretty:gretty:4.1.4"
 com-github-ben-manes-gradle-versions-plugin = "com.github.ben-manes:gradle-versions-plugin:0.51.0"
 com-github-spullara-mustache-java-compiler = "com.github.spullara.mustache.java:compiler:0.9.13"
 org-hidetake-gradle-ssh-plugin = "org.hidetake:gradle-ssh-plugin:2.10.1"
-org-jfrog-buildinfo-build-info-extractor-gradle = "org.jfrog.buildinfo:build-info-extractor-gradle:4.33.17"
+org-jfrog-buildinfo-build-info-extractor-gradle = "org.jfrog.buildinfo:build-info-extractor-gradle:4.33.20"
 org-sonarsource-scanner-gradle-sonarqube-gradle-plugin = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8.0.1969"
 org-instancio-instancio-junit = "org.instancio:instancio-junit:3.7.1"
 
